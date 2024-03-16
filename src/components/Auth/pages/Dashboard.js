@@ -7,7 +7,8 @@ import Recieved from "../../../assets/Recieved2.png";
 
 import Yellow from "../../../assets/yellow.png";
 
-const Dashboard = () => {
+const Dashboard = ({route}) => {
+  const {username} = route.params;
   return (
     <>
       <StatusBar backgroundColor="#0E164D" barStyle="light-content" />
@@ -17,7 +18,7 @@ const Dashboard = () => {
             <View style={styles.ham}>
               <Image source={Hamburger} style={styles.myHamburger} />
             </View>
-            <Text style={styles.myTitle}> Hello Sandra, </Text>
+            <Text style={styles.myTitle}> Hello {username}, </Text>
           </View>
 
           <View style={styles.addMoney}>

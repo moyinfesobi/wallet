@@ -11,6 +11,8 @@ import LogIn from "./src/components/Auth/pages/LogIn";
 import SignUp from "./src/components/Auth/pages/SignUp";
 import Dashboard from "./src/components/Auth/pages/Dashboard";
 import AppLoading from 'expo-app-loading';
+import ToastProvider from "react-native-toast-message";
+import { RecoilRoot } from "recoil";
 
  
 const { Navigator, Screen } = createNativeStackNavigator();
@@ -39,19 +41,13 @@ export default function App() {
 
   return (
     <>
+    
       <NavigationContainer>
         <Navigator>
           <>
             <Screen
               name={"welcome"}
               component={Welcome}
-              options={{
-                headerShown: false,
-              }}
-            />
-            <Screen
-              name={"login"}
-              component={LogIn}
               options={{
                 headerShown: false,
               }}
@@ -64,6 +60,14 @@ export default function App() {
               }}
             />
             <Screen
+              name={"login"}
+              component={LogIn}
+              options={{
+                headerShown: false,
+              }}
+            />
+            
+            <Screen
               name={"dashboard"}
               component={Dashboard}
               options={{
@@ -73,6 +77,8 @@ export default function App() {
           </>
         </Navigator>
       </NavigationContainer>
+      <ToastProvider />
+      <RecoilRoot />
     </>
   );
 }

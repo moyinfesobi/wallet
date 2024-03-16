@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -5,9 +6,47 @@ import {
   StatusBar,
   TextInput,
   Pressable,
+  ActivityIndicator,
 } from "react-native";
+import {
+  initialSignupValues,
+  SignupSchema,
+} from "../../../validation/signup-schema";
+import { Formik, ErrorMessage } from "formik";
+import Toast from "react-native-toast-message";
+import { signup } from "../../../app/modules/services/authCRUD";
 
 const SignUp = ({ navigation }) => {
+  const [loading, setLoading] = useState(false);
+  const handSignUpSubmit = async (values) => {
+    try {
+      setLoading(true);
+      const { username, password, email } = values;
+      await signup(username, password, email);
+      setLoading(false);
+      Toast.show({
+        type: "success",
+        text1: "SignUp Successful",
+      });
+      navigation.navigate("dashboard", {username});
+    } catch (e) {
+      if (!e.message.includes("Network")) {
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: e.response,
+        });
+      } else {
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: "Network Error",
+        });
+      }
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       <StatusBar backgroundColor="#0E164D" barStyle="light-content" />
@@ -19,45 +58,107 @@ const SignUp = ({ navigation }) => {
         </Text>
 
         {/* FORM */}
-        <View>
-          <TextInput
-            style={styles.firstInput}
-            placeholder="Username"
-            placeholderTextColor={"#0E164D"}
-          />
+        <Formik
+          initialValues={initialSignupValues}
+          validationSchema={SignupSchema}
+          onSubmit={handSignUpSubmit}
+        >
+          {({ handleChange, handleBlur, handleSubmit }) => (
+            <View>
+              <View>
+                <TextInput
+                  style={styles.firstInput}
+                  name={"username"}
+                  onChangeText={handleChange("username")}
+                  placeholder="Username"
+                  placeholderTextColor={"#0E164D"}
+                />
+                <ErrorMessage name={"username"}>
+                  {(msg) => (
+                    <Text
+                      style={{
+                        fontSize: 10,
+                        color: "red",
+                        marginBottom: 10,
+                        marginTop: 5,
+                      }}
+                    >
+                      {msg}
+                    </Text>
+                  )}
+                </ErrorMessage>
+              </View>
 
-          <TextInput
-            style={styles.secondInput}
-            placeholder="Email"
-            placeholderTextColor={"#0E164D"}
-          />
+              <View>
+                <TextInput
+                  style={styles.secondInput}
+                  name={"email"}
+                  onChangeText={handleChange("email")}
+                  placeholder="Email"
+                  placeholderTextColor={"#0E164D"}
+                />
+                <ErrorMessage name={"email"}>
+                  {(msg) => (
+                    <Text
+                      style={{
+                        fontSize: 10,
+                        color: "red",
+                        marginBottom: 10,
+                        marginTop: 5,
+                      }}
+                    >
+                      {msg}
+                    </Text>
+                  )}
+                </ErrorMessage>
+              </View>
 
-          <TextInput
-            style={styles.secondInput}
-            placeholder="Password"
-            placeholderTextColor={"#0E164D"}
-          />
+              <View>
+                <TextInput
+                  style={styles.secondInput}
+                  autoComplete={"off"}
+                  onChangeText={handleChange("password")}
+                  onBlur={handleBlur("password")}
+                  placeholder="Password"
+                  placeholderTextColor={"#0E164D"}
+                  secureTextEntry
+                />
+                <ErrorMessage name={"password"} style={{ alignSelf: "start" }}>
+                  {(msg) => (
+                    <Text
+                      style={{
+                        fontSize: 10,
+                        color: "red",
+                        marginTop: 5,
+                      }}
+                    >
+                      {msg}
+                    </Text>
+                  )}
+                </ErrorMessage>
+              </View>
 
-          <Text style={styles.show}> Show Password</Text>
-          <Pressable
-            style={styles.myLogin}
-            onPress={() => navigation.navigate("dashboard")}
-          >
-            <View style={styles.myLogin}>
-              <Text style={styles.myLoginText}> SignUp</Text>
+              <Text style={styles.show}> Show Password</Text>
+              <Pressable style={styles.myLogin} onPress={handleSubmit}>
+                {loading ? (
+                  <ActivityIndicator color={"#FFFFFF"} />
+                ) : (
+                  <Text style={styles.myLoginText}> Sign Up</Text>
+                )}
+              </Pressable>
+
+              <Pressable
+                style={styles.myLink}
+                onPress={() => navigation.navigate("login")}
+              >
+                <Text style={styles.mySignUp}>
+                  {" "}
+                  Already have an account? Sign In{" "}
+                </Text>
+              </Pressable>
             </View>
-          </Pressable>
-
-          <Pressable
-            style={styles.myLink}
-            onPress={() => navigation.navigate("LogIn")}
-          >
-            <Text style={styles.mySignUp}>
-              {" "}
-              Already have an account? Sign In{" "}
-            </Text>
-          </Pressable>
-        </View>
+          )}
+        </Formik>
       </View>
     </>
   );

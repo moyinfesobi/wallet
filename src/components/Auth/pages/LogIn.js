@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -5,9 +6,48 @@ import {
   StatusBar,
   TextInput,
   Pressable,
+  ActivityIndicator,
 } from "react-native";
+import {
+  initialLoginValues,
+  LoginSchema,
+} from "../../../validation/login-schema.js";
+import { Formik, ErrorMessage } from "formik";
+import Toast from "react-native-toast-message";
+import { login } from "../../../app/modules/services/authCRUD.js";
 
 const LogIn = ({ navigation }) => {
+  const [loading, setLoading] = useState(false);
+  // const [auth, setAuth] = useRecoilState(authState);
+
+  const handleLogiSubmit = async (values) => {
+    try {
+      setLoading(true);
+      const { username, password } = values;
+      await login(username, password);
+      setLoading(false);
+      Toast.show({
+        type: "success",
+        text1: "Login Successful",
+      });
+      navigation.navigate("dashboard", {username});
+    } catch (e) {
+      if (!e.message.includes("Network")) {
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: e.response,
+        });
+      } else {
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: "Network Error",
+        });
+      }
+      setLoading(false);
+    }
+  };
   return (
     <>
       <StatusBar backgroundColor="#0E164D" barStyle="light-content" />
@@ -16,31 +56,79 @@ const LogIn = ({ navigation }) => {
         <Text style={styles.second}> Sign in to your account </Text>
 
         {/* FORM */}
-        <View>
-          <TextInput
-            style={styles.firstInput}
-            placeholder="Email"
-            placeholderTextColor={"#0E164D"}
-          />
-
-          <TextInput
-            style={styles.secondInput}
-            placeholder="Password"
-            placeholderTextColor={"#0E164D"}
-          />
-
-          <Text style={styles.show}> Show Password</Text>
-          <Pressable
-            style={styles.myLogin}
-            onPress={() => navigation.navigate("signup")}
-          >
+        <Formik
+          initialValues={initialLoginValues}
+          validationSchema={LoginSchema}
+          onSubmit={handleLogiSubmit}
+        >
+          {({ handleChange, handleBlur, handleSubmit }) => (
             <View>
-              <Text style={styles.myLoginText}> Log In</Text>
-            </View>
-          </Pressable>
+              <View>
+                <TextInput
+                  style={styles.firstInput}
+                  name={"username"}
+                  onChangeText={handleChange("username")}
+                  placeholder="Username"
+                  placeholderTextColor={"#0E164D"}
+                />
+                <ErrorMessage name={"username"}>
+                  {(msg) => (
+                    <Text
+                      style={{
+                        fontSize: 10,
+                        color: "red",
+                        marginBottom: 10,
+                        marginTop: 5,
+                      }}
+                    >
+                      {msg}
+                    </Text>
+                  )}
+                </ErrorMessage>
+              </View>
 
-          <Text style={styles.mySignUp}>Don’t have an account? Sign Up</Text>
-        </View>
+              <View>
+                <TextInput
+                  style={styles.secondInput}
+                  autoComplete={"off"}
+                  onChangeText={handleChange("password")}
+                  onBlur={handleBlur("password")}
+                  placeholder="Password"
+                  placeholderTextColor={"#0E164D"}
+                  secureTextEntry
+                />
+                <ErrorMessage name={"password"} style={{ alignSelf: "start" }}>
+                  {(msg) => (
+                    <Text
+                      style={{
+                        fontSize: 10,
+                        color: "red",
+                        marginTop: 5,
+                      }}
+                    >
+                      {msg}
+                    </Text>
+                  )}
+                </ErrorMessage>
+              </View>
+
+              <Text style={styles.show}> Show Password</Text>
+              <Pressable style={styles.myLogin} onPress={handleSubmit}>
+                {loading ? (
+                  <ActivityIndicator color={"#FFFFFF"} />
+                ) : (
+                  <Text style={styles.myLoginText}> Log In</Text>
+                )}
+              </Pressable>
+
+              <Pressable onPress={() => navigation.navigate("signup")}>
+                <Text style={styles.mySignUp}>
+                  Don’t have an account? Sign Up
+                </Text>
+              </Pressable>
+            </View>
+          )}
+        </Formik>
       </View>
     </>
   );
