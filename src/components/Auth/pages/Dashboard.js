@@ -1,14 +1,46 @@
+import { useState, useEffect } from "react";
 import { StyleSheet, Text, View, StatusBar, Image } from "react-native";
 import Hamburger from "../../../assets/Group102.png";
 import Person from "../../../assets/Rectangle265.png";
 import Person2 from "../../../assets/Person2.png";
 import Recieved from "../../../assets/Recieved2.png";
-
-
 import Yellow from "../../../assets/yellow.png";
+import {
+  balance,
+  transaction,
+} from "../../../app/modules/services/authCRUD.js";
 
-const Dashboard = ({route}) => {
-  const {username} = route.params;
+const Dashboard = ({ route }) => {
+  const { username } = route.params;
+  const [totalBalance, setTotalBalance] = useState([]);
+  const [totalTransaction, setTotalTransaction] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await balance();
+
+        setTotalBalance(response.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    const fetchTransData = async () => {
+      try {
+        const response = await transaction();
+        setTotalTransaction(response);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchTransData();
+  }, []);
   return (
     <>
       <StatusBar backgroundColor="#0E164D" barStyle="light-content" />
@@ -28,7 +60,10 @@ const Dashboard = ({route}) => {
 
         <View style={styles.second}>
           <Text style={styles.balance}> Your current balance is </Text>
-          <Text style={styles.balance2}> ₦200,000 </Text>
+          <Text style={styles.balance2}>
+            {" "}
+            {totalBalance?.currency} {totalBalance?.balance}{" "}
+          </Text>
         </View>
 
         <View style={styles.moneyBox}>
@@ -52,38 +87,79 @@ const Dashboard = ({route}) => {
 
           <View style={styles.mainTrans}>
             <View style={styles.transDetails}>
-            <Image source={Person} style={styles.person}  />
+              <Image source={Person} style={styles.person} />
 
               <View>
                 <Text style={styles.personName}> Adeboye Usman</Text>
                 <View style={styles.greenTag}>
-                <Image source={Recieved} style={styles.recievedBox}  />
+                  <Image source={Recieved} style={styles.recievedBox} />
                   <Text style={styles.recievedText}> Recieved </Text>
                 </View>
               </View>
             </View>
 
-            <Text style={styles.transPrice}> ₦200,000</Text>
+            <Text style={styles.transPrice}>ETH 10.5</Text>
           </View>
-
-
-
 
           <View style={styles.secondTrans}>
             <View style={styles.transDetails}>
-            <Image source={Person2} style={styles.person}  />
+              <Image source={Person2} style={styles.person} />
 
               <View>
                 <Text style={styles.personName}> Onome Adetayo </Text>
                 <View style={styles.yellowTag}>
-                <Image source={Yellow} style={styles.recievedBox}  />
+                  <Image source={Yellow} style={styles.recievedBox} />
                   <Text style={styles.recievedText}> Sent </Text>
                 </View>
               </View>
             </View>
 
-            <Text style={styles.yellowTransPrice}> ₦200,000</Text>
+            <Text style={styles.yellowTransPrice}> BTC 5.2</Text>
           </View>
+
+         
+
+          {/* {totalTransaction?.map((transaction, index) => (
+            <View
+              key={index}
+              style={index % 2 === 0 ? styles.mainTrans : styles.secondTrans}
+            >
+              <View style={styles.transDetails}>
+                <Image
+                  source={transaction?.type === "credit" ? Person : Person2}
+                  style={styles.person}
+                />
+                <View>
+                  <Text style={styles.personName}>
+                    {transaction?.type === "credit"
+                      ? "Adeboye Usman"
+                      : "Onome Adetayo"}
+                  </Text>
+                  <View
+                    style={
+                      transaction?.type === "credit"
+                        ? styles.greenTag
+                        : styles.yellowTag
+                    }
+                  >
+                    <Image
+                      source={
+                        transaction?.type === "credit" ? Recieved : Yellow
+                      }
+                      style={styles.recievedBox}
+                    />
+                    <Text style={styles?.recievedText}>
+                      {transaction.type === "credit" ? "Recieved" : "Sent"}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+              <Text style={styles.transPrice}>
+                {" "}
+                {transaction?.currency} {transaction?.amount}
+              </Text>
+            </View>
+          ))} */}
         </View>
       </View>
     </>
@@ -210,7 +286,7 @@ const styles = StyleSheet.create({
   },
   mainTrans: {
     backgroundColor: "#192259",
-   padding: 16,
+    padding: 16,
     flexDirection: "row",
     justifyContent: "space-between",
   },
@@ -226,7 +302,6 @@ const styles = StyleSheet.create({
     color: "#858EC5",
     fontFamily: "poppins-bold",
     fontSize: 16,
-
   },
   greenTag: {
     flexDirection: "row",
@@ -236,7 +311,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     justifyContent: "center",
     alignItems: "center",
-
   },
   recievedBox: {
     height: 16,
@@ -254,8 +328,7 @@ const styles = StyleSheet.create({
     fontFamily: "poppins-bold",
   },
   secondTrans: {
-   
-   padding: 16,
+    padding: 16,
     flexDirection: "row",
     justifyContent: "space-between",
   },
@@ -273,5 +346,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "poppins-bold",
   },
-
 });

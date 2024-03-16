@@ -18,7 +18,11 @@ import { login } from "../../../app/modules/services/authCRUD.js";
 
 const LogIn = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
-  // const [auth, setAuth] = useRecoilState(authState);
+  const [passwordType, setPassordType] = useState(true);
+
+  const togglePassword = () => {
+    setPassordType(!passwordType);
+  };
 
   const handleLogiSubmit = async (values) => {
     try {
@@ -95,7 +99,7 @@ const LogIn = ({ navigation }) => {
                   onBlur={handleBlur("password")}
                   placeholder="Password"
                   placeholderTextColor={"#0E164D"}
-                  secureTextEntry
+                  secureTextEntry={passwordType}
                 />
                 <ErrorMessage name={"password"} style={{ alignSelf: "start" }}>
                   {(msg) => (
@@ -112,7 +116,11 @@ const LogIn = ({ navigation }) => {
                 </ErrorMessage>
               </View>
 
-              <Text style={styles.show}> Show Password</Text>
+              <Pressable onPress={togglePassword}>
+                  <Text style={styles.show}>
+                    {passwordType ? "Show" : "Hide"} Password
+                  </Text>
+                </Pressable>
               <Pressable style={styles.myLogin} onPress={handleSubmit}>
                 {loading ? (
                   <ActivityIndicator color={"#FFFFFF"} />

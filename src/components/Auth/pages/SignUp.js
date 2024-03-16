@@ -18,6 +18,12 @@ import { signup } from "../../../app/modules/services/authCRUD";
 
 const SignUp = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
+  const [passwordType, setPassordType] = useState(true);
+
+  const togglePassword = () => {
+    setPassordType(!passwordType);
+  };
+
   const handSignUpSubmit = async (values) => {
     try {
       setLoading(true);
@@ -28,7 +34,7 @@ const SignUp = ({ navigation }) => {
         type: "success",
         text1: "SignUp Successful",
       });
-      navigation.navigate("dashboard", {username});
+      navigation.navigate("dashboard", { username });
     } catch (e) {
       if (!e.message.includes("Network")) {
         Toast.show({
@@ -121,7 +127,7 @@ const SignUp = ({ navigation }) => {
                   onBlur={handleBlur("password")}
                   placeholder="Password"
                   placeholderTextColor={"#0E164D"}
-                  secureTextEntry
+                  secureTextEntry={passwordType}
                 />
                 <ErrorMessage name={"password"} style={{ alignSelf: "start" }}>
                   {(msg) => (
@@ -138,7 +144,11 @@ const SignUp = ({ navigation }) => {
                 </ErrorMessage>
               </View>
 
-              <Text style={styles.show}> Show Password</Text>
+              <Pressable onPress={togglePassword}>
+                <Text style={styles.show}>
+                  {passwordType ? "Show" : "Hide"} Password
+                </Text>
+              </Pressable>
               <Pressable style={styles.myLogin} onPress={handleSubmit}>
                 {loading ? (
                   <ActivityIndicator color={"#FFFFFF"} />
