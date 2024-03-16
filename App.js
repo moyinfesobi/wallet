@@ -1,6 +1,7 @@
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View } from "react-native";
-import { NativeRouter, Route, Routes } from "react-router-native";
+import { useEffect, useState } from 'react';
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { SplashScreen } from 'expo-splash-screen';
 
 import { useFonts } from "expo-font";
 
@@ -9,8 +10,13 @@ import Welcome2 from "./src/components/Welcome2";
 import LogIn from "./src/components/Auth/pages/LogIn";
 import SignUp from "./src/components/Auth/pages/SignUp";
 import Dashboard from "./src/components/Auth/pages/Dashboard";
+import AppLoading from 'expo-app-loading';
+
+ 
+const { Navigator, Screen } = createNativeStackNavigator();
 
 export default function App() {
+  const [isAppReady, setAppReady] = useState(false);
   const [fontsLoaded] = useFonts({
     "poppins-black": require("./assets/fonts/Poppins-Black.ttf"),
     "poppins-bold": require("./assets/fonts/Poppins-Bold.ttf"),
@@ -21,19 +27,52 @@ export default function App() {
     "poppins-regular": require("./assets/fonts/Poppins-Regular.ttf"),
     "poppins-semibold": require("./assets/fonts/Poppins-SemiBold.ttf"),
     "poppins-thin": require("./assets/fonts/Poppins-Thin.ttf"),
-
-    // Add more fonts if necessary
   });
 
+
+  if (!fontsLoaded) {
+    return <AppLoading />;
+  };
+
+  
+
+
   return (
-    <NativeRouter>
-      <Routes>
-        <Route exact path="/" Component={Welcome} />
-        <Route exact path="/splash2" Component={Welcome2} />
-        <Route exact path="/login" Component={LogIn} />
-        <Route exact path="/signup" Component={SignUp} />
-        <Route exact path="/dashboard" Component={Dashboard} />
-      </Routes>
-    </NativeRouter>
+    <>
+      <NavigationContainer>
+        <Navigator>
+          <>
+            <Screen
+              name={"welcome"}
+              component={Welcome}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Screen
+              name={"login"}
+              component={LogIn}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Screen
+              name={"signup"}
+              component={SignUp}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Screen
+              name={"dashboard"}
+              component={Dashboard}
+              options={{
+                headerShown: false,
+              }}
+            />
+          </>
+        </Navigator>
+      </NavigationContainer>
+    </>
   );
 }

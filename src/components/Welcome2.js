@@ -1,8 +1,8 @@
-import { StyleSheet, Text, View, StatusBar, ImageBackground } from 'react-native'
+import { StyleSheet, Text, View, StatusBar, ImageBackground, Pressable } from 'react-native'
 import MySwiper2 from '../assets/SVGs/Swiper2';
-import { Link } from 'react-router-native';
 
-const Welcome2 = () => {
+
+const Welcome2 = ({navigation}) => {
     const myImg = require("../assets/splash-two-2.png");
 
   return (
@@ -18,11 +18,13 @@ const Welcome2 = () => {
               {" "}
               Making money is hard enough, we {"\n"}  make transfering it easy enough. 
             </Text>
-            <Link style={styles.third} to="/login">
+            <Pressable style={styles.third} onPress={() => navigation.navigate('login')} > 
+            
             <View>
               <Text style={styles.thirdText}> Start Banking </Text>
             </View>
-            </Link>
+            </Pressable>
+        
           </View>
         </View>
       </ImageBackground>

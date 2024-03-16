@@ -1,7 +1,13 @@
-import { StyleSheet, Text, View, StatusBar, TextInput } from "react-native";
-import { Link } from "react-router-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  StatusBar,
+  TextInput,
+  Pressable,
+} from "react-native";
 
-const LogIn = () => {
+const LogIn = ({ navigation }) => {
   return (
     <>
       <StatusBar backgroundColor="#0E164D" barStyle="light-content" />
@@ -24,20 +30,16 @@ const LogIn = () => {
           />
 
           <Text style={styles.show}> Show Password</Text>
-          <Link to="/SignUp" style={styles.myLogin}>
+          <Pressable
+            style={styles.myLogin}
+            onPress={() => navigation.navigate("signup")}
+          >
             <View>
               <Text style={styles.myLoginText}> Log In</Text>
             </View>
-          </Link>
-          
-          <Text style={styles.mySignUp}>
-              Don’t have an account? Sign Up
-            </Text>
-        
-          
-          
-          
-         
+          </Pressable>
+
+          <Text style={styles.mySignUp}>Don’t have an account? Sign Up</Text>
         </View>
       </View>
     </>

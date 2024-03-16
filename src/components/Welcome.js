@@ -3,12 +3,11 @@ import {
   Text,
   View,
   StatusBar,
-  ImageBackground,
+  ImageBackground, Pressable
 } from "react-native";
-import { Link } from "react-router-native";
 import MySwiper from "../assets/SVGs/Swiper";
 
-const Welcome = () => {
+const Welcome = ({navigation}) => {
   const myImg = require("../assets/splash-one2.png");
   return (
     <>
@@ -22,11 +21,13 @@ const Welcome = () => {
               {" "}
               You have nothing to be scared {"\n"} about, we got you covered.
             </Text>
-            <Link to="/splash2" style={styles.third}>
-              <View style={styles.third}>
+            <Pressable style={styles.third} onPress={() => navigation.navigate('login') }>
+           
+            
                 <Text style={styles.thirdText}> Start Banking </Text>
-              </View>
-            </Link>
+              
+           
+            </Pressable>
           </View>
         </View>
       </ImageBackground>
